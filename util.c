@@ -132,7 +132,7 @@ int get_request(int fd, char *filename) {
    
    // INTERIM TODO: Read the request from the file descriptor into the buffer
    
-   // INTERIM TODO: PRINT THE REQUEST TO THE TERMINAL
+   // INTERIM TODO: Print the first line of the request to the terminal.
    
    // TODO: Ensure that the incoming request is a properly formatted HTTP "GET" request
    // The first line of the request must be of the form: GET <file name> HTTP/1.0 
