@@ -132,16 +132,23 @@ int get_request(int fd, char *filename) {
    
    // INTERIM TODO: Read the request from the file descriptor into the buffer
    
+   // HINT: Attempt to read 2048 bytes from the file descriptor. 
+   
    // INTERIM TODO: Print the first line of the request to the terminal.
    
    // TODO: Ensure that the incoming request is a properly formatted HTTP "GET" request
    // The first line of the request must be of the form: GET <file name> HTTP/1.0 
    // or: GET <file name> HTTP/1.1
    
+   // HINT: It is recommended that you look up C string functions such as sscanf and strtok for
+   // help with parsing the request.
+   
    // TODO: Extract the file name from the request
    
    // TODO: Ensure the file name does not contain with ".." or "//"
    // FILE NAMES WHICH CONTAIN ".." OR "//" ARE A SECURITY THREAT AND MUST NOT BE ACCEPTED!!!
+   
+   // HINT: It is recommended that you look up the strstr function for help looking for faulty file names.
 
    // TODO: Copy the file name to the provided buffer
 
