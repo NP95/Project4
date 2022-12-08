@@ -17,6 +17,9 @@
 #include <unistd.h>
 #include <signal.h>
 #define QUEUE_LENGTH 20
+#define GET_REQUEST_SIZE 2048
+#define GET_RESPONSE_HEADER 2048
+#define FAILURE 2	
 int master_fd = -1;
 pthread_mutex_t accept_con_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -118,10 +121,19 @@ int accept_connection(void) {
    
    
    // TODO: Aquire the mutex lock
-
+   if( pthread_mutex_lock(&accept_con_mutex) < 0)
+     {
+      perror("Failed to acquire connection lock");
+      exit(EXIT_FAILURE);
+    }
    // TODO: Accept a new connection on the passive socket and save the fd to newsock
-
+         newsock = accept(master_fd,(struct sockaddr *)&new_recv_addr,&addr_len);
    // TODO: Release the mutex lock
+    if(pthread_mutex_unlock(&accept_con_mutex) < 0)
+     {
+       perror("Failed to unlock the mutex");
+       exit(EXIT_FAILURE);
+     }
 
    // TODO: Return the file descriptor for the new client connection
    
@@ -159,11 +171,20 @@ int get_request(int fd, char *filename) {
    char buf[2048];
    
    // INTERIM TODO: Read the request from the file descriptor into the buffer
-   
+   FILE* filestream = fdopen(fd,"r");
+   if(filestream == NULL)
+   {
+    perror("Failed to open the connection: \n");
+    return FAILURE; 
+   }
    // HINT: Attempt to read 2048 bytes from the file descriptor. 
-   
+   if(fgets(buf,2048,filestream) == NULL)
+    {
+     perror("Failed to read ");
+     return FAILURE;
+    }
    // INTERIM TODO: Print the first line of the request to the terminal.
-   
+   printf(" %s \n",buf);
    // TODO: Ensure that the incoming request is a properly formatted HTTP "GET" request
    // The first line of the request must be of the form: GET <file name> HTTP/1.0 
    // or: GET <file name> HTTP/1.1
