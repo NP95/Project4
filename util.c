@@ -2,6 +2,7 @@
 #define _REENTRANT
 #endif
 
+
 #include <stdio.h>
 #include <pthread.h>
 #include <sys/types.h>
@@ -15,7 +16,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
-
+#define QUEUE_LENGTH 20
 int master_fd = -1;
 pthread_mutex_t accept_con_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -37,7 +38,6 @@ void init(int port) {
    int flag;
    
    
-   
    /**********************************************
     * IMPORTANT!
     * ALL TODOS FOR THIS FUNCTION MUST BE COMPLETED FOR THE INTERIM SUBMISSION!!!!
@@ -47,13 +47,41 @@ void init(int port) {
    
    // TODO: Create a socket and save the file descriptor to sd (declared above)
    // This socket should be for use with IPv4 and for a TCP connection.
+   sd = socket(PF_INET,SOCK_STREAM,0);
+   if( sd < 0)
+   {
+      perror("Socket creation failed \n");
+      exit(EXIT_FAILURE);
 
-   // TODO: Change the socket options to be reusable using setsockopt(). 
+   }
 
-   // TODO: Bind the socket to the provided port.
-
-   // TODO: Mark the socket as a pasive socket. (ie: a socket that will be used to receive connections)
    
+  
+ // TODO: Change the socket options to be reusable using setsockopt().
+  flag = 1; 
+  ret_val= setsockopt(sd,SOL_SOCKET,SO_REUSEADDR,(char*)&flag,sizeof(int));
+  if(ret_val < 0) 
+  {
+    perror("Unable to make socket reusable \n");
+    exit(EXIT_FAILURE);
+  }
+   // TODO: Bind the socket to the provided port.
+   addr.sin_family = AF_INET;
+   addr.sin_addr.s_addr=INADDR_ANY;
+   addr.sin_port=htons(port);
+
+   if(bind(sd,(struct sockaddr*)&addr,sizeof(addr))==-1)
+   {
+    perror("Unable to bind the socket\n");
+    exit(EXIT_FAILURE);
+   }
+   // TODO: Mark the socket as a pasive socket. (ie: a socket that will be used to receive connections)
+  if(listen(sd,QUEUE_LENGTH) == -1)
+   {
+    perror("Failed to mark the socket as a passive socket\n");
+    exit(EXIT_FAILURE);
+
+   }
    
    
    // We save the file descriptor to a global variable so that we can use it in accept_connection().
